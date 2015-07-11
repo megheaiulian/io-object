@@ -1,0 +1,23 @@
+{
+  "name": "io-object",
+  "version": "1.0.1",
+  "homepage": "https://github.com/arodic/io-object",
+  "authors": [
+    "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
+  ],
+  "description": "Custom HTML element that can be used to edit objects.",
+  "main": "io-object.html",
+  "keywords": [
+    "io-object", "output", "i/o", "io", "ui", "polymer", "element", "web-components"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~1.0.6",
+    "observe-js": "Polymer/observe-js#~0.5.6",
+    "iron-list": "PolymerElements/iron-list#~1.0.1",
+    "iron-component-page": "PolymerElements/iron-component-page#~1.0.4"
+  }
+}
