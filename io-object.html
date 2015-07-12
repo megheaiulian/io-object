@@ -18,6 +18,9 @@ TODO: WORK IN PROGRESS
 -->
 <dom-module id="io-object">
   <style>
+    :host {
+      display: inline-block;
+    }
     #constructor {
       cursor: pointer;
       white-space: nowrap;
@@ -31,15 +34,11 @@ TODO: WORK IN PROGRESS
     #length::after {
       content: ']';
     }
-    #expandicon:focus {
-      background: transparent;
-      box-shadow: none;
-     }
     #properties {
       /* TODO: test with fixed height and iron-list */
       /*overflow-x: hidden;*/
-      /*overflow-y: auto;*/ 
-      margin-left: 1em;
+      /*overflow-y: auto;*/
+      margin-left: 0.5em;
     }
   </style>
   <template>
@@ -79,7 +78,7 @@ TODO: WORK IN PROGRESS
         observer: '_valueChanged'
       },
       /**
-       * Determines if the input can be focused and edited by user action.
+       * Desables the element.
        */
       disabled: {
         value: false,

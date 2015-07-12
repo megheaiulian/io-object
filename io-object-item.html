@@ -1,7 +1,8 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../io-value/io-value.html">
+<link rel="import" href="../io-input/io-input.html">
 
-<!-- 
+<!--
 `<io-object-item>` is used by `<io-object>` element to display element key-value pairs.
 
 TODO: WORK IN PROGRESS
@@ -13,41 +14,47 @@ TODO: WORK IN PROGRESS
   <style>
     :host {
       display: block;
+      white-space: nowrap;
     }
     .io-key {
-      margin-right: 0.125em;
+      vertical-align: top;
       color: rgb(140, 13, 150);
       cursor: pointer;
     }
-    .io-value::shadow > io-string:not(:empty) {
+    .io-key:after {
+      content: ':';
+      float: right;
+    }
+    io-value {
+      display: inline;
+      vertical-align: top;
+    }
+    io-value::shadow > io-input:not(:empty) {
       color: rgb(198, 22, 5);
     }
-    .io-value::shadow > io-boolean,
-    .io-value::shadow > io-number {
+    io-value::shadow > io-boolean,
+    io-value::shadow > io-input {
       color: rgb(25, 0, 211);
-    }
-    .io-value::shadow > io-function {
-      color: rgba(0, 0, 0, 0.5);
-      font-style: italic;
     }
   </style>
   <template>
     <template is="dom-if" if="{{_isarray}}">
-      <io-number class="io-key"
-          integer
+      <io-input class="io-key"
+          type="integer"
           on-io-value-set="_keySet"
           value="{{key}}"
           aria-label="index"
-          disabled="{{disabled}}"></io-number>:
+          disabled="{{disabled}}"></io-input>
     </template>
     <template is="dom-if" if="{{!_isarray}}">
-      <io-string class="io-key"
+      <io-input class="io-key"
+          type="string"
           on-io-value-set="_keySet"
           value="{{key}}"
           aria-label="key"
-          disabled="{{disabled}}"></io-string>:
+          disabled="{{disabled}}"></io-input>
     </template>
-    <io-value id="value" class="io-value"
+    <io-value id="value"
         on-io-value-set="_valueSet"
         value="{{value}}"
         disabled="{{disabled}}"></io-value>
@@ -189,7 +196,7 @@ TODO: WORK IN PROGRESS
           this.object.splice(event.detail.value, 0, this.value);
         }
       } else {
-        // TODO: test 
+        // TODO: test
         delete this.object[event.detail.oldValue];
         if (event.detail.value !== '' && event.detail.value !== null && event.detail.value !== undefined) {
           this.object[String(event.detail.value)] = this.value;
