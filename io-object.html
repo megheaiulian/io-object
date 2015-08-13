@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../observe-js/observe-js.html">
 <link rel="import" href="../iron-list/iron-list.html">
+<link rel="import" href="../io-object-to-array/io-object-to-array.html">
 <link rel="import" href="../io-boolean/io-boolean.html">
 <link rel="import" href="io-object-item.html">
 <!--
@@ -11,8 +11,6 @@ Example:
     <io-object
         value="{{objectvalue}}">
     </io-object>
-
-TODO: WORK IN PROGRESS
 
 @demo demo/index.html Basic Demo
 -->
@@ -35,28 +33,23 @@ TODO: WORK IN PROGRESS
       content: ']';
     }
     #properties {
-      /* TODO: test with fixed height and iron-list */
-      /*overflow-x: hidden;*/
-      /*overflow-y: auto;*/
       margin-left: 0.5em;
     }
   </style>
   <template>
     <span id="constructor">
-      <io-boolean icon id="expandicon" tabindex="-1" value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean>
-      <span on-tap="toggleExpanded">
-        <span id="name">{{value.constructor.name}}</span>
-        <span id="length">{{_observedkeys.length}}</span>
-      </span>
+      <io-boolean icon id="expandicon" on-io-value-set="_onExandedSet" tabindex="-1" value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean>
+      <span id="name">{{value.constructor.name}}</span>
+      <span id="length">{{_valuearray.length}}</span>
     </span>
     <template is="dom-if" if="{{expanded}}">
-      <div id="properties"><!-- flex?="{{corelist}}" -->
-        <template is="dom-repeat" items="{{_observedkeys}}">
+      <div id="properties">
+        <template is="dom-repeat" id="repeat" items="{{_valuearray}}">
           <io-object-item
-              object="{{value}}"
               value="{{item.value}}"
               key="{{item.key}}"
-              disabled="{{disabled}}">
+              disabled="{{disabled}}"
+              on-add-item-after="_onAddItemAfter">
           </io-object-item>
         </template>
       </div>
@@ -74,14 +67,12 @@ TODO: WORK IN PROGRESS
        * Object value
        */
       value: {
-        notify: true,
-        observer: '_valueChanged'
+        value: null
       },
       /**
        * Desables the element.
        */
       disabled: {
-        value: false,
         type: Boolean
       },
       /**
@@ -89,86 +80,75 @@ TODO: WORK IN PROGRESS
        */
       expanded: {
         value: false,
-        notify: true,
         type: Boolean,
-        observer: '_expandedChanged'
+        observer: '_expandedChangedJob'
       },
-      // corelist: {
-      //   value: false,
-      //   type: Boolean
-      // },
-      _observedkeys: {
-        value: null,
-        type: Array
+      _valuearray: {
+        computed: 'computeObservedMapArray(value, "_valuearray")'
       }
     },
+    behaviors: [
+      Polymer.ioObjectToArray
+    ],
     hostAttributes: {
       oncontextmenu: 'return false;',
       role: 'tree'
     },
-    // listeners: {
-    //   'io-object-add-item-after': '_onAddItemAfter'
-    // },
-    toggleExpanded: function() {
-      this.expanded = !this.expanded;
+    _onExandedSet: function() {
+      if (this.expanded) {
+        this.async(function () {
+          // var item = this.$$('io-object-item');
+          // item.$$('.io-key').focus();
+        }.bind(this), 1);
+      }
+    },
+    _isArray: function (value) {
+      return value instanceof Array;
     },
     focus: function() {
       this.$.expandicon.focus();
     },
     // _onAddItemAfter: function(event) {
-    //   event.stopPropagation();
-    //   observedkeys = [];
-    //   for (i = 0; i < this._observedkeys.length; i++) {
-    //     observedkeys.push(this._observedkeys[i]);
-    //     if (this._observedkeys[i].key === event.detail.key) {
-    //       observedkeys.push({
-    //         key: null, value: null
-    //       });
+    //   if (this.value instanceof Array) {
+    //     this.splice('_observedkeys', Number(event.detail.index + 1), 0, {key: Number(event.detail.index + 1), value: null});
+    //     for(var i = 0; i < this._observedkeys.length; i++) {
+    //       this._observedkeys[i].key = i;
     //     }
+    //     // TODO: dont focus if extended by application.
+    //     this.async(function () {
+    //       var items = this.querySelectorAll('io-object-item');
+    //       items[Number(event.detail.index + 1)].$$('.io-key').focus()
+    //     }.bind(this), 1);
+    //   } else {
+    //     this.splice('_observedkeys', this._observedkeys.length, 0, {key: null, value: null});
+    //     this.async(function () {
+    //       var items = this.querySelectorAll('io-object-item');
+    //       items[items.length - 1].key = '__newKey';
+    //       items[items.length - 1].$$('.io-key').$.input.value = '';
+    //       items[items.length - 1].$$('.io-key')._updateInputWidth();
+    //       // items[items.length - 1].$$('.io-key').immediatevalue = '';
+    //       items[items.length - 1].$$('.io-key').focus();
+    //     }.bind(this), 1);
     //   }
-    //   // TODO: does not work on non-chrome
-    //   this._observedkeys = observedkeys;
-    //   requestAnimationFrame(function() {
-    //     var item = this.$$('io-object-item[key="' + event.detail.key + '"]');
-    //     item.nextElementSibling.keyeditor.focus();
-    //   }.bind(this));
+    //   this.notifyPath("_observedkeys", this._observedkeys.slice());
     // },
     _expandedChanged: function() {
-      // if (this.expanded && this._observedkeys && this._observedkeys.length === 0) {
-      //   this._observedkeys = [{key: null, value: null}];
-      // }
+      if (this.expanded) {
+        if (this._valuearray.length === 0) {
+          // Add empty item if no items are present.
+          // this._onAddItemAfter({detail: {index: -1}});
+        }
+      } else {
+      //
+      }
       if (this.expanded) {
         this.setAttribute('aria-expanded', '');
       } else {
         this.removeAttribute('aria-expanded');
       }
     },
-    _valueChanged: function(value, oldValue) {
-      //TODO: smarted observe
-      this._observedkeys = [];
-      if (!this.value || typeof this.value !== 'object') return;
-      this.__updateKeys = this._updateKeys.bind(this);
-      this.__updateKeys();
-
-      if (this.__observer) this.__observer.close();
-      this.__observer = new ObjectObserver(this.value);
-      this.__observer.open(function() {
-        this.__updateKeys();
-      }.bind(this));
-    },
-    _updateKeys: function() {
-      observedkeys = [];
-      if (this.value instanceof Array) {
-        for (i = 0; i < this.value.length; i++) {
-          observedkeys.push({key: i, value: this.value[i]});
-        }
-      } else {
-        keys = Object.keys(this.value);
-        for (i in keys) {
-          observedkeys.push({key: keys[i], value: this.value[keys[i]]});
-        }
-      }
-      this._observedkeys = observedkeys;
+    _expandedChangedJob: function () {
+      this.debounce('io-object-expanded-changed', this._expandedChanged, 1);
     }
   });
 }());

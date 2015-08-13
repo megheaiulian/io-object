@@ -2,7 +2,7 @@
 <html>
   <head>
 
-    <title>io-value tests</title>
+    <title>io-object tests</title>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -14,122 +14,51 @@
     <script src="../../test-fixture/test-fixture-mocha.js"></script>
 
     <link rel="import" href="../../test-fixture/test-fixture.html">
-    <link rel="import" href="../io-value.html">
+    <link rel="import" href="../io-object.html">
 
   </head>
   <body>
 
-    <test-fixture id="iovalue">
+    <test-fixture id="ioobject">
       <template>
-        <io-value></io-value>
+        <io-object></io-object>
       </template>
     </test-fixture>
 
     <script>
 
 
-      suite('<io-value>', function() {
-        var iovalue;
+      suite('<io-object>', function() {
+        var ioobject;
 
-        function timePasses(ms) {
-          return new Promise(function(resolve) {
-            window.setTimeout(function() {
-              resolve();
-            }, ms);
-          });
-        }
+        // function timePasses(ms) {
+        //   return new Promise(function(resolve) {
+        //     window.setTimeout(function() {
+        //       resolve();
+        //     }, ms);
+        //   });
+        // }
 
         setup(function() {
-          iovalue = fixture('iovalue');
+          ioobject = fixture('ioobject');
+          ioobject.value = {
+            'boolean': true,
+            'number': 1337,
+            'string': 'hello string',
+            'object': {answer: 42},
+            'array': [true, 1337, 'hello string', {answer: 42}, {}, undefined, null, function() {}],
+            'emptyObject': {},
+            'undefined': undefined,
+            'null': null,
+            'func': function() {}
+          }
         });
 
-        test('io-value should instantiate io-boolean when boolean value is set.', function(done) {
-          iovalue.value = true;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-boolean', '_editor');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
+        test('io-object should have _valuearray of length 9.', function() {
+          assert.equal(ioobject._valuearray.length, 9, '_valuearray');
         });
 
-        test('io-value should instantiate io-input[type=string] when string value is set.', function(done) {
-          iovalue.value = '';
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-input', '_editor');
-            assert.equal(iovalue._editor.type, 'string', 'io-input type');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
-        });
-
-        test('io-value should instantiate io-input[type=float] when number value is set.', function(done) {
-          iovalue.value = 123;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-input', '_editor');
-            assert.equal(iovalue._editor.type, 'float', 'io-input type');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
-        });
-
-        test('io-value should instantiate io-object when object value is set.', function(done) {
-          iovalue.value = {};
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.localName, 'io-object', '_editor');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-
-        });
-
-        test('io-value should pass immediatevalue property to its editor and vice versa.', function(done) {
-          iovalue.immediatevalue = 1;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.immediatevalue, 1, '_editor value');
-            iovalue._editor.immediatevalue = 2;
-            timePasses(1).then(function() {
-              assert.equal(iovalue.immediatevalue, 2, 'io-value value');
-              done();
-            }).catch(function(e) {
-              done(e);
-            });
-          }).catch(function(e) {
-            done(e);
-          });
-        });
-
-        test('io-value should pass value property to its editor and vice versa.', function(done) {
-          iovalue.value = 1;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.value, 1, '_editor value');
-            iovalue._editor.value = 2;
-            timePasses(1).then(function() {
-              assert.equal(iovalue.value, 2, 'io-value value');
-              done();
-            }).catch(function(e) {
-              done(e);
-            });
-          }).catch(function(e) {
-            done(e);
-          });
-        });
-
-        test('io-value should pass disabled property to its editor.', function(done) {
-          iovalue.disabled = true;
-          timePasses(1).then(function() {
-            assert.equal(iovalue._editor.disabled, true, '_editor value');
-            done();
-          }).catch(function(e) {
-            done(e);
-          });
-        });
+        // TODO: test more, mutations etc.
 
       });
 
