@@ -38,9 +38,9 @@ Example:
   </style>
   <template>
     <span id="constructor">
-      <io-boolean icon id="expandicon" on-io-value-set="_onExandedSet" tabindex="-1" value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean>
-      <span id="name">{{value.constructor.name}}</span>
-      <span id="length">{{_valuearray.length}}</span>
+      <io-boolean icon id="expandicon" tabindex="-1" value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean>
+      <span id="name" on-click="toggleExpanded">{{value.constructor.name}}</span>
+      <span id="length" on-click="toggleExpanded">{{_valuearray.length}}</span>
     </span>
     <template is="dom-if" if="{{expanded}}">
       <div id="properties">
@@ -48,6 +48,7 @@ Example:
           <io-object-item
               value="{{item.value}}"
               key="{{item.key}}"
+              isarray="{{_isArray(value)}}"
               disabled="{{disabled}}"
               on-add-item-after="_onAddItemAfter">
           </io-object-item>
@@ -59,7 +60,7 @@ Example:
 
 <script>
 (function() {
-  var i, observedkeys, keys;
+  var i, observedkeys, keys, newItem;
   Polymer({
     is: 'io-object',
     properties: {
@@ -94,52 +95,26 @@ Example:
       oncontextmenu: 'return false;',
       role: 'tree'
     },
-    _onExandedSet: function() {
-      if (this.expanded) {
-        this.async(function () {
-          // var item = this.$$('io-object-item');
-          // item.$$('.io-key').focus();
-        }.bind(this), 1);
-      }
-    },
     _isArray: function (value) {
       return value instanceof Array;
     },
     focus: function() {
       this.$.expandicon.focus();
     },
-    // _onAddItemAfter: function(event) {
-    //   if (this.value instanceof Array) {
-    //     this.splice('_observedkeys', Number(event.detail.index + 1), 0, {key: Number(event.detail.index + 1), value: null});
-    //     for(var i = 0; i < this._observedkeys.length; i++) {
-    //       this._observedkeys[i].key = i;
-    //     }
-    //     // TODO: dont focus if extended by application.
-    //     this.async(function () {
-    //       var items = this.querySelectorAll('io-object-item');
-    //       items[Number(event.detail.index + 1)].$$('.io-key').focus()
-    //     }.bind(this), 1);
-    //   } else {
-    //     this.splice('_observedkeys', this._observedkeys.length, 0, {key: null, value: null});
-    //     this.async(function () {
-    //       var items = this.querySelectorAll('io-object-item');
-    //       items[items.length - 1].key = '__newKey';
-    //       items[items.length - 1].$$('.io-key').$.input.value = '';
-    //       items[items.length - 1].$$('.io-key')._updateInputWidth();
-    //       // items[items.length - 1].$$('.io-key').immediatevalue = '';
-    //       items[items.length - 1].$$('.io-key').focus();
-    //     }.bind(this), 1);
-    //   }
-    //   this.notifyPath("_observedkeys", this._observedkeys.slice());
-    // },
+    /**
+     * Expands/colapses object properties.
+     */
+    toggleExpanded: function () {
+      this.expanded = !this.expanded;
+    },
     _expandedChanged: function() {
       if (this.expanded) {
         if (this._valuearray.length === 0) {
           // Add empty item if no items are present.
-          // this._onAddItemAfter({detail: {index: -1}});
+          this._valuearray.addTempItem(0);
         }
       } else {
-      //
+        this._valuearray.removeTempItem();
       }
       if (this.expanded) {
         this.setAttribute('aria-expanded', '');
@@ -149,6 +124,23 @@ Example:
     },
     _expandedChangedJob: function () {
       this.debounce('io-object-expanded-changed', this._expandedChanged, 1);
+    },
+    _onAddItemAfter: function (event) {
+      i = this._valuearray.findIndex(event.detail.key) + 1;
+      if (this.value instanceof Array) {
+        this.value.splice(i, 0, undefined);
+        this.async(function () {
+          newItem = this.querySelector('io-object-item[key="' + i + '"]');
+          newItem.$.key.focus();
+        }.bind(this), 10);
+
+      } else {
+        this._valuearray.addTempItem(i);
+        this.async(function () {
+          newItem = this.querySelector('io-object-item:not([key])');
+          newItem.$.key.focus();
+        }.bind(this), 10);
+      }
     }
   });
 }());
