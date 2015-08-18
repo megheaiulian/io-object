@@ -66,7 +66,6 @@ TODO: WORK IN PROGRESS
         value="{{value}}"
         disabled="{{disabled}}">
     </io-value><span id="tail" tabindex="0"
-        on-click="_onTailClick"
         on-keyup="_onTailKeyUp">&nbsp;</span>
   </template>
 </dom-module>
@@ -91,10 +90,6 @@ TODO: WORK IN PROGRESS
     },
     hostAttributes: {
       role: 'treeitem'
-    },
-    _onTailClick: function (event) {
-      event.preventDefault();
-      this.fire('add-item-after', {key: this.key}, {bubbles: false});
     },
     _onTailKeyUp: function (event) {
       if (event.which == 13) {

@@ -42,6 +42,9 @@
     ready: function () {
       this.objvalue.array = this.arrayvalue;
       this.arrayvalue[3] = this.objvalue;
+
+      window.objvalue = this.objvalue;
+      window.arrayvalue = this.arrayvalue;
     }
   });
 </script>

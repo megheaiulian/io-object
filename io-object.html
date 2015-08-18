@@ -39,7 +39,7 @@ Example:
   <template>
     <span id="constructor">
       <io-boolean icon id="expandicon" tabindex="-1" value="{{expanded}}" trueicon="expand-more" falseicon="chevron-right"></io-boolean>
-      <span id="name" on-click="toggleExpanded">{{value.constructor.name}}</span>
+      <span id="name" on-click="toggleExpanded">{{_constructor}}</span>
       <span id="length" on-click="toggleExpanded">{{_valuearray.length}}</span>
     </span>
     <template is="dom-if" if="{{expanded}}">
@@ -68,7 +68,8 @@ Example:
        * Object value
        */
       value: {
-        value: null
+        value: null,
+        observer: '_valueChanged'
       },
       /**
        * Desables the element.
@@ -86,6 +87,9 @@ Example:
       },
       _valuearray: {
         computed: 'computeObservedMapArray(value, "_valuearray")'
+      },
+      _constructor: {
+        value: ''
       }
     },
     behaviors: [
@@ -106,6 +110,16 @@ Example:
      */
     toggleExpanded: function () {
       this.expanded = !this.expanded;
+    },
+    _valueChanged: function () {
+      // TODO: Cleanup
+      if (typeof this.value === 'object' && this.value !== null) {
+        if (this.value.constructor.name) {
+          this._constructor = this.value.constructor.name;
+        } else {
+          this._constructor = this._isArray(this.value) ? 'Array' : 'Object';
+        }
+      }
     },
     _expandedChanged: function() {
       if (this.expanded) {

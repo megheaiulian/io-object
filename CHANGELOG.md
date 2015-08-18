@@ -8,6 +8,10 @@ New Features:
 
   - returned and improved property add/remove feature
 
+Bugfixes:
+
+  - Constructor name shows correctly in IE
+
 ## v1.0.1
 
 Breaking Changes:
