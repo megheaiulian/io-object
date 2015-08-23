@@ -64,6 +64,8 @@ TODO: WORK IN PROGRESS
         disabled="{{disabled}}">
     </io-input><io-value id="value"
         value="{{value}}"
+        key="{{key}}"
+        parent="{{object}}"
         disabled="{{disabled}}">
     </io-value><span id="tail" tabindex="0"
         on-keyup="_onTailKeyUp">&nbsp;</span>
@@ -74,6 +76,9 @@ TODO: WORK IN PROGRESS
   Polymer({
     is: 'io-object-item',
     properties: {
+      object: {
+        type: Object
+      },
       value: {
         notify: true
       },

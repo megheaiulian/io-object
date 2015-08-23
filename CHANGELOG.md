@@ -1,3 +1,15 @@
+## v1.1.0
+
+Improvements
+
+  - Relies on io-value and ioValueConfig to select value editor.
+
+## v1.0.3
+
+Improvements:
+
+  - Passing parent object reference to io-value as parent attribute.
+
 ## v1.0.2
 
 Improvements:
@@ -6,7 +18,7 @@ Improvements:
 
 New Features:
 
-  - returned and improved property add/remove feature
+  - Returned and improved property add/remove feature
 
 Bugfixes:
 
@@ -16,7 +28,7 @@ Bugfixes:
 
 Breaking Changes:
 
-  - property add/remove feature temporarily removed.
+  - Property add/remove feature temporarily removed.
   - io-object moved to its own repository.
   - core-list (now iron-list) is temporarily not supported.
 

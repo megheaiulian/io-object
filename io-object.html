@@ -46,6 +46,7 @@ Example:
       <div id="properties">
         <template is="dom-repeat" id="repeat" items="{{_valuearray}}">
           <io-object-item
+              object="{{value}}"
               value="{{item.value}}"
               key="{{item.key}}"
               isarray="{{_isArray(value)}}"
@@ -60,6 +61,7 @@ Example:
 
 <script>
 (function() {
+
   var i, observedkeys, keys, newItem;
   Polymer({
     is: 'io-object',
