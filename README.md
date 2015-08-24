@@ -1,5 +1,5 @@
 io-object
-========
+=========
 
 [DOCS](http://akirodic.com/components/io-object/)
 

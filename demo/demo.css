@@ -4,21 +4,13 @@ html {
   height: 100%;
 }
 body{
-  margin: 0;
+  margin: 0.5em;
   padding: 0;
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background: #ddd;
-}
-
-.label {
-  display: inline-block;
-  margin: 0.5em;
-  min-width: 100px;
 }
 
 .demo {
-  vertical-align: top;
-  background: white;
+  background: #ddd;
   margin: 0.5em;
   padding: 0.5em;
   min-width: 100px;
