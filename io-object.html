@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-list/iron-list.html">
+<!-- TODO: iron-list -->
+<!-- <link rel="import" href="../iron-list/iron-list.html"> -->
 <link rel="import" href="../io-object-to-array/io-object-to-array.html">
 <link rel="import" href="../io-boolean/io-boolean.html">
 <link rel="import" href="io-object-item.html">
@@ -80,10 +81,9 @@ Example:
         type: Boolean
       },
       /**
-       * Determines if the editor is expanded
+       * Determines if editor is expanded
        */
       expanded: {
-        value: false,
         type: Boolean,
         observer: '_expandedChangedJob'
       },
@@ -129,7 +129,7 @@ Example:
           // Add empty item if no items are present.
           this._valuearray.addTempItem(0);
         }
-      } else {
+      } else if (this._valuearray) {
         this._valuearray.removeTempItem();
       }
       if (this.expanded) {
