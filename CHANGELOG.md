@@ -1,6 +1,11 @@
-## v1.1.2
+## v1.1.3
 
   - Added io-value-set event propagation
+
+## v1.1.2
+
+  - Polymer version bump.
+  - Removed .bowerrc
 
 ## v1.1.0
 
