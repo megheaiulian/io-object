@@ -1,3 +1,7 @@
+## v1.1.2
+
+  - Added io-value-set event propagation
+
 ## v1.1.0
 
 Improvements

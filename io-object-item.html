@@ -61,12 +61,14 @@ TODO: WORK IN PROGRESS
         type="{{_getType(isarray)}}"
         value="{{key}}"
         aria-label="key"
-        disabled="{{disabled}}">
+        disabled="{{disabled}}"
+        on-io-value-set="_valueSet">
     </io-input><io-value id="value"
         value="{{value}}"
         key="{{key}}"
         parent="{{object}}"
-        disabled="{{disabled}}">
+        disabled="{{disabled}}"
+        on-io-value-set="_valueSet">
     </io-value><span id="tail" tabindex="0"
         on-keyup="_onTailKeyUp">&nbsp;</span>
   </template>
@@ -95,6 +97,17 @@ TODO: WORK IN PROGRESS
     },
     hostAttributes: {
       role: 'treeitem'
+    },
+    _valueSet: function (event) {
+      /**
+       * This event is fired when value is set by user action.
+       * This is a non-bubbling event.
+       * @event io-value-set
+       * @param {Object} detail value change data
+       * @param {Object} detail.value new value
+       * @param {Object} detail.oldValue old value
+       */
+      this.fire('io-value-set', {value: event.detail.value, oldValue: event.detail.oldValue}, {bubbles: false});
     },
     _onTailKeyUp: function (event) {
       if (event.which == 13) {

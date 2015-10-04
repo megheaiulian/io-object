@@ -52,7 +52,8 @@ Example:
               key="{{item.key}}"
               isarray="{{_isArray(value)}}"
               disabled="{{disabled}}"
-              on-add-item-after="_onAddItemAfter">
+              on-add-item-after="_onAddItemAfter"
+              on-io-value-set="_valueSet">
           </io-object-item>
         </template>
       </div>
@@ -62,6 +63,8 @@ Example:
 
 <script>
 (function() {
+
+  // TODO: toggling boolean in array causes loss of focus.
 
   var i, observedkeys, keys, newItem;
   Polymer({
@@ -112,6 +115,18 @@ Example:
      */
     toggleExpanded: function () {
       this.expanded = !this.expanded;
+    },
+    _valueSet: function (event) {
+      /**
+       * This event is fired when value is set by user action.
+       * This is a non-bubbling event.
+       * @event io-value-set
+       * @param {Object} detail value change data
+       * @param {Object} detail.value new value
+       * @param {Object} detail.oldValue old value
+       */
+      // TODO: consider adding old value
+      this.fire('io-value-set', {value: this.value}, {bubbles: false});
     },
     _valueChanged: function () {
       // TODO: Cleanup
