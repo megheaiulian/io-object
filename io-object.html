@@ -139,13 +139,15 @@ Example:
       }
     },
     _expandedChanged: function() {
-      if (this.expanded) {
-        if (this._valuearray.length === 0) {
-          // Add empty item if no items are present.
-          this._valuearray.addTempItem(0);
+      if (this._valuearray) {
+        if (this.expanded) {
+          if (this._valuearray.length === 0) {
+            // Add empty item if no items are present.
+            this._valuearray.addTempItem(0);
+          }
+        } else {
+          this._valuearray.removeTempItem();
         }
-      } else if (this._valuearray) {
-        this._valuearray.removeTempItem();
       }
       if (this.expanded) {
         this.setAttribute('aria-expanded', '');
