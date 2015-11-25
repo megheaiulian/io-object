@@ -1,11 +1,10 @@
 {
   "name": "io-object",
-  "version": "1.2.1",
-  "homepage": "https://github.com/arodic/io-object",
+  "version": "1.2.2",
   "authors": [
-    "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
+    "Aki Rodic <aleksandar.xyz@gmail.com>"
   ],
-  "description": "Custom HTML element that can be used to edit objects.",
+  "description": "Custom HTML element that can be used to edit objects",
   "main": "io-object.html",
   "keywords": [
     "io-object", "object", "input", "editor", "output", "i/o", "io", "ui", "polymer", "element", "web-components"
@@ -15,11 +14,11 @@
     "**/.*"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~1.2.1",
-    "iron-list": "PolymerElements/iron-list#~1.1.5",
-    "io-object-to-array": "arodic/io-object-to-array#~1.2.1",
-    "io-boolean": "arodic/io-boolean#~1.2.1",
-    "io-input": "arodic/io-input#~1.2.1",
-    "io-value": "arodic/io-value#~1.2.1"
+    "polymer": "Polymer/polymer#~1.2.2",
+    "iron-list": "PolymerElements/iron-list#~1.1.6",
+    "io-object-to-array": "arodic/io-object-to-array#~1.2.2",
+    "io-boolean": "arodic/io-boolean#~1.2.2",
+    "io-input": "arodic/io-input#~1.2.2",
+    "io-value": "arodic/io-value#~1.2.2"
   }
 }
