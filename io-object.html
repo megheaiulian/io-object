@@ -81,13 +81,15 @@ Example:
        * Desables the element.
        */
       disabled: {
-        type: Boolean
+        type: Boolean,
+        value: false
       },
       /**
        * Determines if editor is expanded
        */
       expanded: {
         type: Boolean,
+        value: false,
         observer: '_expandedChangedJob'
       },
       _valuearray: {
