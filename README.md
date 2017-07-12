@@ -24,16 +24,14 @@ Example:
     }
     </style>
     <div id="container">
-      <template is="dom-bind">
-        <next-code-block></next-code-block>
-      </template>
+      <next-code-block></next-code-block>
     </div>
   </template>
 </custom-element-demo>
 ```
 -->
 ```html
-<io-object value="{{}}"></io-object>
+<io-object labeled expanded demo></io-object>
 ```
 
 Preview:

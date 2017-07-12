@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../io-value/io-styles.html">
 <link rel="import" href="io-object-item.html">
 
@@ -73,7 +74,9 @@ Example:
          reflectToAttribute: true
        },
        _keys: {
-         type: Array
+         value: null,
+         type: Array,
+         notify: true
        }
      }
     }
@@ -103,6 +106,18 @@ Example:
         delete this._updateID;
         this._update();
       });
+      if (this.hasAttribute('demo') && !this.value) {
+        this.value = {
+          number: 1337,
+          string: 'hello',
+          boolean: true,
+          null: null,
+          NaN: NaN,
+          undefined: undefined,
+          array: [1, 2, 3, 4]
+        }
+        this.value.object = this.value;
+      }
     }
   }
 

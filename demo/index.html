@@ -43,7 +43,7 @@
       <demo-snippet>
       <template>
         <div class="row header">
-          <io-object class="object" expanded labeled></io-object>
+          <io-object class="object" expanded labeled demo></io-object>
         </div>
       </demo-snippet>
       </template>
@@ -51,19 +51,19 @@
     </div>
 
     <script>
-    const values = {
-      number: 1337,
-      string: 'hello',
-      boolean: true,
-      null: null,
-      NaN: NaN,
-      undefined: undefined,
-      array: [1, 2, 3, 4]
-    }
-    values.object = values;
-    window.addEventListener('WebComponentsReady', function() {
-      document.querySelector('io-object').value = values;
-    });
+    // const values = {
+    //   number: 1337,
+    //   string: 'hello',
+    //   boolean: true,
+    //   null: null,
+    //   NaN: NaN,
+    //   undefined: undefined,
+    //   array: [1, 2, 3, 4]
+    // }
+    // values.object = values;
+    // window.addEventListener('WebComponentsReady', function() {
+    //   document.querySelector('io-object').value = values;
+    // });
     </script>
   </body>
 </html>

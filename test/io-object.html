@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>io-object basic tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+    <link rel="import" href="../io-object.html">
+    <link rel="import" href="../io-object-item.html">
+  </head>
+  <body>
+
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <io-object></io-object>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="ChangedPropertyTestFixture">
+      <template>
+        <io-object labeled expanded></io-object>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('io-object', function() {
+
+        test('instantiating the element with default properties works', function() {
+          var element = fixture('BasicTestFixture');
+          assert.equal(element.value, undefined);
+        });
+
+        test('setting a property on the element works', function(done) {
+          var element = fixture('ChangedPropertyTestFixture');
+          element.value = {a: 1, b:2};
+
+          setTimeout(function () {
+            var ioOvjectItemElement = element.shadowRoot.querySelector('io-object-item');
+            var ioValueElement = ioOvjectItemElement.shadowRoot.querySelector('io-value');
+            var spanElement = ioValueElement.shadowRoot.querySelector('span');
+            assert.equal(spanElement.innerHTML, '1.0');
+            done();
+
+          }.bind(this), 100);
+        });
+
+      });
+    </script>
+
+  </body>
+</html>
