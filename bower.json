@@ -1,6 +1,6 @@
 {
   "name": "io-object",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "homepage": "https://github.com/arodic/io-object",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -9,6 +9,7 @@
   "main": "io-object.html",
   "keywords": [
     "io-object",
+    "io-elements",
     "input",
     "output",
     "editor",
@@ -30,7 +31,7 @@
     "**/.*"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#12.0.0-rc.1",
+    "polymer": "Polymer/polymer#2.0.0-rc.1",
     "io-value": "arodic/io-value#^2.0.0"
   },
   "devDependencies": {
