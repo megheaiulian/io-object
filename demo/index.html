@@ -1,23 +1,69 @@
 <!doctype html>
-<html>
-<head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <title>io-object demo</title>
 
-  <title>io-object demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="demo-app.html">
-  <link rel="stylesheet" type="text/css" href="demo.css">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../io-object.html">
 
-</head>
-<body unresolved fullbleed>
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      div.row {
+        @apply --layout-horizontal;
+      }
+      div.header, span.alignright {
+        color: rgba(128, 122, 255, 0.75);
+      }
+      span.alignright {
+        text-align: right;
+        padding-right: 0.2em;;
+      }
+      div.row * {
+        margin: 1px;
+        @apply --layout-flex;
+      }
+      io-value {
+        border: 1px solid #eee;
+      }
+      </style>
+    </custom-style>
+  </head>
+  <body>
 
-  <span id="browser-sync-binding"></span>
+    <div class="vertical-section-container centered">
 
-  <demo-app></demo-app>
+      <h3>io-object with various property types</h3>
+      <demo-snippet>
+      <template>
+        <div class="row header">
+          <io-object class="object" expanded labeled></io-object>
+        </div>
+      </demo-snippet>
+      </template>
 
-</body>
+    </div>
+
+    <script>
+    const values = {
+      number: 1337,
+      string: 'hello',
+      boolean: true,
+      null: null,
+      NaN: NaN,
+      undefined: undefined,
+      array: [1, 2, 3, 4]
+    }
+    values.object = values;
+    window.addEventListener('WebComponentsReady', function() {
+      document.querySelector('io-object').value = values;
+    });
+    </script>
+  </body>
 </html>

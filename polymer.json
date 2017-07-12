@@ -1,0 +1,8 @@
+{
+  "sources": [
+    "src/**/*"
+  ],
+  "lint": {
+    "rules": ["polymer-2"]
+  }
+}
