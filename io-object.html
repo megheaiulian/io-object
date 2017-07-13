@@ -52,7 +52,7 @@ Example:
       on-keydown="_toggleHandler"
       tabindex="0">[[_constructor]]</span>
     <template is="dom-repeat" items="{{_keys}}">
-      <span class="io-label">[[item]]</span>: <io-object-item key="[[item]]" value="[[value]]"></io-object-item>
+      <span class="io-label">[[item]]: </span><io-object-item key="[[item]]" value="[[value]]"></io-object-item>
     </template>
   </template>
   <script>
@@ -113,7 +113,7 @@ Example:
         delete this._updateID;
         this._update();
       });
-      // TODO: gross (fix demo)
+      // // TODO: gross (fix demo)
       if (this.hasAttribute('demo') && !this.value) {
         this.value = {
           number: 1337,
