@@ -1,6 +1,6 @@
 {
   "name": "io-object",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "homepage": "https://github.com/arodic/io-object",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#2.0.0-rc.1",
-    "io-value": "arodic/io-value#^2.0.8"
+    "io-value": "arodic/io-value#^2.0.9"
   },
   "devDependencies": {
     "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0-preview",
