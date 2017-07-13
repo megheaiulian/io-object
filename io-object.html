@@ -52,7 +52,7 @@ Example:
       on-keydown="_toggleHandler"
       tabindex="0">[[_constructor]]</span>
     <template is="dom-repeat" items="{{_keys}}">
-      <span class="io-label">[[item]]: </span><io-object-item key="[[item]]" value="[[value]]"></io-object-item>
+      <span class="io-label">[[item]]: </span><io-object-item value="[[_value]]" key="[[item]]"></io-object-item>
     </template>
   </template>
   <script>
@@ -82,8 +82,7 @@ Example:
        },
        _keys: {
          value: null,
-         type: Array,
-         notify: true
+         type: Array
        }
      }
     }
@@ -96,10 +95,14 @@ Example:
       }
     }
     _update() {
+      // TODO: polymer bug?
+      // On value change, keys from previous object used.
+      this._value = this.value;
       if (typeof this.value == 'object' && this.value !== null) {
         if (this.expanded) {
           this._constructor = '▾ ' + this.value.constructor.name || 'Object';
           this._keys = Object.keys(this.value);
+          // this._value = this.value;
         } else {
           this._constructor = '▸ ' + this.value.constructor.name || 'Object';
           this._constructor += '(' + Object.keys(this.value).length + ')';
