@@ -5,141 +5,142 @@ This code may only be used under the MIT style license found at
 https://raw.githubusercontent.com/arodic/io-object/master/LICENSE
 -->
 
-<link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../io-value/io-value.html">
 
 <!--
 `io-object-item` is a wrapper for object property editors.
 
-It chooses which element to instantiate based key, value and internal configuration.
+It chooses which element to instantiate based on key, value and internal configuration.
 
 This element uses 'io-object-mutated' event to broadcast and recieve property changes.
 
-@IoElement
-@extends Polymer.Element
+@IoObjectItem
+@extends HTMLElement
 @summary `io-object-item` is a simple editor for javascript objects.
 -->
 
-<dom-module id="io-object-item">
-  <template></template>
-  <script>
+<script>
 
-  //TODO: improve configuration system
-  var IoConfig = {
-    'Object' : {
-      'type:string': {tag: 'io-value', params: {type: 'string'}},
-      'type:number': {tag: 'io-value', params: {type: 'number', step: 0.1}},
-      'type:boolean': {tag: 'io-value', params: {type: 'boolean'}},
-      'type:object': {tag: 'io-object', params: {labeled: true}},
-      'constructor:Array': {tag: 'io-object'},
-      'value:null': {tag: 'io-value', params: {disabled: true}},
-      'value:undefined': {tag: 'io-value', params: {disabled: true}}
-    },
-    'Array': {
-      'type:number': {tag: 'io-value', params: {type: 'number', step: 0.001}}
+class IoObjectItem extends HTMLElement {
+  static get is() { return 'io-object-item'; }
+  set value(value) {
+    this._value = value;
+    this._updateJob();
+  }
+  get value() {
+    return this._value;
+  }
+  set key(key) {
+    this._key = key;
+    this._updateJob();
+  }
+  get key() {
+    return this._key;
+  }
+  constructor() {
+    super();
+    this._shadowRoot = this.attachShadow({mode: 'open'});
+  }
+  connectedCallback() {
+    this._objectMutatedListener = this._objectMutatedHandler.bind(this);
+    this._valueSetListener = this._valueSetHandler.bind(this);
+    window.addEventListener('io-object-mutated', this._objectMutatedListener);
+  }
+  disconnectedCallback() {
+    window.removeEventListener('io-object-mutated', this._objectMutatedListener);
+    delete this._objectMutatedListener;
+    this._removeEditor();
+  }
+  _objectMutatedHandler(event) {
+    if (event.detail.object === this.value) {
+      if (event.detail.key === this.key || event.detail.key === '*') {
+        this._updateJob();
+      }
     }
   }
-
-  class IoObjectItem extends Polymer.Element {
-    static get is() { return 'io-object-item'; }
-    static get properties() {
-     return {
-       value: {
-         notify: true,
-         observer: '_updateJob'
-       },
-       key: {
-         type: String,
-         observer: '_updateJob'
-       }
-     }
-    }
-    connectedCallback() {
-      this._objectMutatedListener = this._objectMutatedHandler.bind(this);
-      this._valueSetListener = this._valueSetHandler.bind(this);
-      window.addEventListener('io-object-mutated', this._objectMutatedListener);
-      super.connectedCallback();
-    }
-    disconnectedCallback() {
-      window.removeEventListener('io-object-mutated', this._objectMutatedListener);
-      delete this._objectMutatedListener;
+  _addEditor(editor = {}, tag, params = {}) {
+    if (editor.localName == tag) {
+      this._editor = editor;
+    } else {
       this._removeEditor();
-      super.disconnectedCallback();
+      this._editor = document.createElement(tag);
+      this._editor.addEventListener('io-value-set', this._valueSetListener);
+      this.shadowRoot.appendChild(this._editor);
     }
-    _objectMutatedHandler(event) {
-      if (event.detail.object === this.value) {
-        if (event.detail.key === this.key || event.detail.key === '*') {
-          this._updateJob();
-        }
-      }
-    }
-    _addEditor(editor = {}, tag, params = {}) {
-      if (editor.localName == tag) {
-        this._editor = editor;
-      } else {
-        this._removeEditor();
-        this._editor = document.createElement(tag);
-        this._editor.addEventListener('io-value-set', this._valueSetListener);
-        this.shadowRoot.appendChild(this._editor);
-      }
-      for (var c in params) {
-        this._editor[c] = params[c];
-      }
-    }
-    _removeEditor() {
-      if (this._editor) {
-        this.shadowRoot.removeChild(this._editor);
-        this._editor.removeEventListener('io-value-set', this._valueSetListener);
-      }
-      delete this._editor;
-    }
-    _valueSetHandler(event) {
-      event.stopPropagation(); // TODO: investigate bubbling
-      this.value[this.key] = event.detail.value;
-      window.dispatchEvent(new CustomEvent('io-object-mutated', {
-        detail: {object: this.value, key: this.key},
-        bubbles: false,
-        composed: true
-      }));
-    }
-    _getConfig(_config) {
-      let _value = this.value[this.key];
-      let _type = typeof _value;
-      let _constructor = 'null';
-      if (_value && _value.constructor) _constructor = _value.constructor.name;
-
-      if ('key:' + this.key in _config) {
-        return _config['key:' + this.key];
-      }
-      if ('value:' + String(_value) in _config) {
-        return _config['value:' + String(_value)];
-      }
-      if ('constructor:' + _constructor in _config) {
-        return _config['constructor:' + _constructor];
-      }
-      if ('type:' + _type in _config) {
-        return _config['type:' + _type];
-      }
-    }
-    _update() {
-      let _config = this._getConfig(IoConfig['Object']);
-      let _constructor = this.value.constructor.name;
-      if (_constructor !== 'Object' && IoConfig[_constructor]) {
-        _config = this._getConfig(IoConfig[_constructor]) || _config;
-      }
-      this._addEditor(this._editor, _config.tag, _config.params);
-      this._editor.value = this.value[this.key];
-    }
-    _updateJob() {
-      clearTimeout(this._updateID);
-      this._updateID = setTimeout(() => {
-        delete this._updateID;
-        this._update();
-      });
+    for (var c in params) {
+      this._editor[c] = params[c];
     }
   }
+  _removeEditor() {
+    if (this._editor) {
+      this.shadowRoot.removeChild(this._editor);
+      this._editor.removeEventListener('io-value-set', this._valueSetListener);
+    }
+    delete this._editor;
+  }
+  _valueSetHandler(event) {
+    event.stopPropagation(); // TODO: investigate bubbling
+    this.value[this.key] = event.detail.value;
+    window.dispatchEvent(new CustomEvent('io-object-mutated', {
+      detail: {object: this.value, key: this.key},
+      bubbles: false,
+      composed: true
+    }));
+  }
+  _getConfig(_config) {
+    let _value = this.value[this.key];
+    let _type = typeof _value;
+    let _constructor = 'null';
+    if (_value && _value.constructor) _constructor = _value.constructor.name;
 
-  window.customElements.define(IoObjectItem.is, IoObjectItem);
+    if ('key:' + this.key in _config) {
+      return _config['key:' + this.key];
+    }
+    if ('value:' + String(_value) in _config) {
+      return _config['value:' + String(_value)];
+    }
+    if ('constructor:' + _constructor in _config) {
+      return _config['constructor:' + _constructor];
+    }
+    if ('type:' + _type in _config) {
+      return _config['type:' + _type];
+    }
+  }
+  _update() {
+    let _config = this._getConfig(Io.config['Object']);
+    let _constructor = this.value.constructor.name;
+    if (_constructor !== 'Object' && Io.config[_constructor]) {
+      _config = this._getConfig(Io.config[_constructor]) || _config;
+    }
+    this._addEditor(this._editor, _config.tag, _config.params);
+    this._editor.value = this.value[this.key];
+  }
+  _updateJob() {
+    clearTimeout(this._updateID);
+    this._updateID = setTimeout(() => {
+      delete this._updateID;
+      this._update();
+    });
+  }
+}
 
-  </script>
-</dom-module>
+window.customElements.define(IoObjectItem.is, IoObjectItem);
+
+//TODO: improve configuration system
+Io = {};
+Io.config = {
+  'Object' : {
+    'type:string': {tag: 'io-value', params: {type: 'string'}},
+    'type:number': {tag: 'io-value', params: {type: 'number', step: 0.1}},
+    'type:boolean': {tag: 'io-value', params: {type: 'boolean'}},
+    'type:object': {tag: 'io-object', params: {labeled: true}},
+    'constructor:Array': {tag: 'io-object'},
+    'value:null': {tag: 'io-value', params: {disabled: true}},
+    'value:undefined': {tag: 'io-value', params: {disabled: true}}
+  },
+  'Array': {
+    'type:number': {tag: 'io-value', params: {type: 'number', step: 0.001}}
+  }
+}
+
+</script>
