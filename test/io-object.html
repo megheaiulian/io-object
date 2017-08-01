@@ -10,7 +10,6 @@
     <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
     <link rel="import" href="../io-object.html">
-    <link rel="import" href="../io-object-item.html">
   </head>
   <body>
 
@@ -45,8 +44,8 @@
           element.value = {a: 1, b:2};
 
           setTimeout(function () {
-            var ioObjectItemElement = element.shadowRoot.querySelector('io-object-item');
-            var ioValueElement = ioObjectItemElement.shadowRoot.querySelector('io-value');
+            var ioObjectItemElement = element.shadowRoot.querySelector('io-object-property');
+            var ioValueElement = ioObjectItemElement.querySelector('io-value');
             var spanElement = ioValueElement.shadowRoot.querySelector('span');
             assert.equal(spanElement.innerHTML, '1.0');
             done();
@@ -54,7 +53,7 @@
 
         });
 
-        test('setting a property on the element works', function(done) {
+        test('Changing object value works', function(done) {
           var element = fixture('ChangedObjectTestFixture');
           element.value = {a: 1, b:2};
 
@@ -63,8 +62,8 @@
             element.value = {c: "c", d: "d"};
 
             setTimeout(function () {
-              var ioObjectItemElement = element.shadowRoot.querySelector('io-object-item');
-              var ioValueElement = ioObjectItemElement.shadowRoot.querySelector('io-value');
+              var ioObjectItemElement = element.shadowRoot.querySelector('io-object-property');
+              var ioValueElement = ioObjectItemElement.querySelector('io-value');
               var spanElement = ioValueElement.shadowRoot.querySelector('span');
               assert.equal(spanElement.innerHTML, 'c');
               // TODO: this is to verify that correct ioObjectItemElement config is used after object changed.

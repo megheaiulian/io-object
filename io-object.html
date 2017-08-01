@@ -7,15 +7,14 @@ https://raw.githubusercontent.com/arodic/io-object/master/LICENSE
 
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/elements/dom-repeat.html">
-<link rel="import" href="../io-value/io-styles.html">
-<link rel="import" href="io-object-item.html">
+<link rel="import" href="io-object-property.html">
 
 <!--
 `io-object` is a simple editor for javascript objects.
 
-By default, it uses `io-value` element for string, number and boolean properties.
+By default, it uses `io-value` element for string, number and boolean editors.
 
-The element can be configured to use any elements for property values.
+It can be configured to use any other element as property editor.
 
 Example:
 
@@ -27,9 +26,40 @@ Example:
 @demo demo/ io-object demo
 -->
 
+<dom-module id="io-styles">
+  <template>
+    <style is="custom-style">
+    :host {
+      --io-color: rgb(0, 0, 0);
+      --io-color-invalid: tomato;
+      --io-color-disabled: rgba(0, 0, 0, 0.25);
+      --io-color-constructor: black;
+      --io-color-label: rgb(136, 19, 145);
+      --io-color-number: rgb(28, 0, 207);
+      --io-color-boolean: rgb(170, 13, 145);
+      --io-color-string: rgb(196, 26, 22);
+      --io-bg-focused: rgba(255, 255, 0, 0.2);
+    }
+    :host {
+      color: var(--io-color);
+    }
+    :host([disabled]) {
+      color: var(--io-color-disabled) !important;
+    }
+    :host([invalid]) {
+      color: var(--io-color-invalid) !important;
+    }
+
+    </style>
+  </template>
+</dom-module>
+
 <dom-module id="io-object">
   <template>
     <style is="custom-style" include="io-styles">
+    :host {
+      display: inline-block;
+    }
     .io-constructor {
       cursor: pointer;
       color: var(--io-color-constructor);
@@ -46,13 +76,25 @@ Example:
       content: "\A";
       white-space: pre;
     }
+
+    :host  *[type="number"] {
+      color: var(--io-color-number);
+    }
+    :host  *[type="string"] {
+      color: var(--io-color-string);
+    }
+    :host  *[type="boolean"] {
+      cursor: pointer;
+      color: var(--io-color-boolean);
+      user-select: none;
+    }
     </style>
     <span class="io-constructor"
       on-click="_toggleHandler"
       on-keydown="_toggleHandler"
       tabindex="0">[[_constructor]]</span>
     <template is="dom-repeat" items="{{_keys}}">
-      <span class="io-label">[[item]]: </span><io-object-item value="[[_value]]" key="[[item]]"></io-object-item>
+      <span class="io-label">[[item]]: </span><io-object-property value="[[_value]]" key="[[item]]"></io-object-property>
     </template>
   </template>
   <script>
@@ -75,7 +117,7 @@ Example:
        },
        /* This attribute reveals property labels. */
        labeled: {
-         value: false,
+         value: true,
          type: Boolean,
          observer: '_updateJob',
          reflectToAttribute: true
@@ -100,12 +142,20 @@ Example:
       this._value = this.value;
       if (typeof this.value == 'object' && this.value !== null) {
         if (this.expanded) {
-          this._constructor = '▾ ' + this.value.constructor.name || 'Object';
+          if (this.labeled) {
+            this._constructor = '▾ ' + this.value.constructor.name || 'Object';
+          } else {
+            this._constructor = '';
+          }
           this._keys = Object.keys(this.value);
           // this._value = this.value;
         } else {
-          this._constructor = '▸ ' + this.value.constructor.name || 'Object';
-          this._constructor += '(' + Object.keys(this.value).length + ')';
+          if (this.labeled) {
+            this._constructor = '▸ ' + this.value.constructor.name || 'Object';
+            this._constructor += '(' + Object.keys(this.value).length + ')';
+          } else {
+            this._constructor = '';
+          }
           this._keys = [];
         }
       }
@@ -116,19 +166,6 @@ Example:
         delete this._updateID;
         this._update();
       });
-      // // TODO: gross (fix demo)
-      if (this.hasAttribute('demo') && !this.value) {
-        this.value = {
-          number: 1337,
-          string: 'hello',
-          boolean: true,
-          null: null,
-          NaN: NaN,
-          undefined: undefined,
-          array: [1, 2, 3, 4]
-        }
-        this.value.object = this.value;
-      }
     }
   }
 

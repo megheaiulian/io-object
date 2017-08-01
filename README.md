@@ -5,8 +5,8 @@
 ## &lt;io-object&gt;
 
 `io-object` is a simple editor for javascript objects.
-By default, it uses `io-value` element for string, number and boolean properties.
-The element can be configured to use any elements for property values.
+By default, it uses `io-value` element for string, number and boolean editors.
+It can be configured to use any other element as property editor.
 
 Example:
 
@@ -16,6 +16,7 @@ Example:
   <template>
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="io-object.html">
+    <link rel="import" href="demo/io-object-demo.html">
     <style>
     io-object {
       display: block;
@@ -31,7 +32,7 @@ Example:
 ```
 -->
 ```html
-<io-object labeled expanded demo></io-object>
+<io-object expanded></io-object>
 ```
 
 Preview:

@@ -1,6 +1,6 @@
 {
   "name": "io-object",
-  "version": "2.0.9",
+  "version": "2.1.0",
   "homepage": "https://github.com/arodic/io-object",
   "authors": [
     "Aleksandar Rodic <aleksandar.xyz@gmail.com>"
@@ -31,19 +31,19 @@
     "**/.*"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#2.0.0-rc.1",
-    "io-value": "arodic/io-value#^2.0.9"
+    "polymer": "Polymer/polymer#^2.0.2",
+    "io-value": "arodic/io-value#^2.1.0"
   },
   "devDependencies": {
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0-preview",
-    "iron-component-page": "PolymerElements/iron-component-page#2.0-preview",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
-    "iron-test-helpers": "PolymerElements/iron-test-helpers#2.0-preview",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#2.0.0",
+    "iron-component-page": "PolymerElements/iron-component-page#3.0.1",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0.0",
+    "iron-test-helpers": "PolymerElements/iron-test-helpers#2.0.0",
     "test-fixture": "PolymerElements/test-fixture#^3.0.0-rc.1",
-    "web-component-tester": "Polymer/web-component-tester#^6.0.0-prerelease.6",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.1"
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0-prerelease.10",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.3"
   },
   "resolutions": {
-    "polymer": "^2.0.0"
+    "polymer": "^2.0.2"
   }
 }
