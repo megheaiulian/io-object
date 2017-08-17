@@ -29,6 +29,7 @@ class IoObjectConstructor extends HTMLElement {
   constructor(object, expanded) {
     super();
     var constructor = '';
+    this.setAttribute('tabindex', 0);
     if (expanded) {
       constructor = '▾ ' + object.constructor.name || 'Object';
     } else {
@@ -47,11 +48,13 @@ class IoObjectConstructor extends HTMLElement {
     this.removeEventListener('keydown', this._toggleListener);
   }
   _toggleHandler(event) {
-    if (event.which == 13 || event.which == 32) {
+    if (event.which == 13 || event.which == 32 || event.type == 'click') {
       event.preventDefault();
       this.parentElement.expanded = !this.parentElement.expanded;
-    } else if (event.type == 'click') {
-      this.parentElement.expanded = !this.parentElement.expanded;
+      let parent = this.parentElement;
+      setTimeout(() => {
+        parent.querySelector('io-object-constructor').focus();
+      });
     }
   }
 }

@@ -113,7 +113,7 @@ class IoObjectProperty extends HTMLElement {
     }
   }
   _update() {
-    let config = this._getConfig();
+    let config = this._getConfig() || {};
     let params = config.params || {};
 
     if (this._editor) {
