@@ -10,123 +10,132 @@ https://raw.githubusercontent.com/arodic/io-object/master/LICENSE
 <!--
 `io-object-property` is a wrapper for object property editors.
 
-It chooses which element to instantiate based on key, value and internal configuration.
+It uses IoObjectProperty.config to determine which property editor to instantiate.
 
-This element uses 'io-object-mutated' event to broadcast and recieve property changes.
+This element uses global 'io-object-mutated' event to broadcast and recieve property changes.
 
 @IoObjectProperty
 @extends HTMLElement
 @summary `io-object-property` is a simple editor for javascript objects.
 -->
 
+<style>
+  io-object-property {
+    display: inline;
+  }
+  io-object-property > io-value[type="number"] {
+    color: rgb(28, 0, 207);
+  }
+  io-object-property > io-value[type="string"] {
+    color: rgb(196, 26, 22);
+  }
+  io-object-property > io-value[type="boolean"] {
+    color: rgb(170, 13, 145);
+  }
+  io-object-property > .io-label:before {
+    content: "\A";
+    white-space: pre;
+  }
+  io-object-property > .io-label:after {
+    content: ": ";
+  }
+</style>
+
 <script>
 
 class IoObjectProperty extends HTMLElement {
   static get is() { return 'io-object-property'; }
-  set value(value) {
-    this._value = value;
-    this._updateJob();
-  }
-  get value() {
-    return this._value;
-  }
-  set key(key) {
-    this._key = key;
-    this._updateJob();
-  }
-  get key() {
-    return this._key;
-  }
-  constructor() {
+  constructor(key, value, labeled) {
     super();
-    this.style.display = 'inline-block';
+    this._key = key;
+    this._value = value;
+    this._labeled = labeled;
+    this._valueSetListener = this._valueSetHandler.bind(this);
+    this._objectMutatedListener = this._objectMutatedHandler.bind(this);
+    if (labeled) {
+      let label = document.createElement('span');
+      label.className = 'io-label';
+      label.innerHTML = key;
+      this.appendChild(label);
+    }
+    this._update();
   }
   connectedCallback() {
-    this._objectMutatedListener = this._objectMutatedHandler.bind(this);
-    this._valueSetListener = this._valueSetHandler.bind(this);
     window.addEventListener('io-object-mutated', this._objectMutatedListener);
   }
   disconnectedCallback() {
     window.removeEventListener('io-object-mutated', this._objectMutatedListener);
-    delete this._objectMutatedListener;
-    this._removeEditor();
-  }
-  _objectMutatedHandler(event) {
-    if (event.detail.object === this.value) {
-      if (event.detail.key === this.key || event.detail.key === '*') {
-        this._updateJob();
-      }
-    }
-  }
-  _addEditor(editor = {}, tag, params = {}) {
-    if (editor.localName == tag) {
-      this._editor = editor;
-    } else {
-      this._removeEditor();
-      this._editor = document.createElement(tag);
-      this._editor.addEventListener('io-value-set', this._valueSetListener);
-      this.appendChild(this._editor);
-    }
-    for (var c in params) {
-      this._editor[c] = params[c];
-    }
-  }
-  _removeEditor() {
-    if (this._editor) {
-      this.removeChild(this._editor);
-      this._editor.removeEventListener('io-value-set', this._valueSetListener);
-    }
-    delete this._editor;
   }
   _valueSetHandler(event) {
-    event.stopPropagation(); // TODO: investigate bubbling
-    this.value[this.key] = event.detail.value;
+    this._value[this._key] = event.detail.value;
     window.dispatchEvent(new CustomEvent('io-object-mutated', {
-      detail: {object: this.value, key: this.key},
+      detail: {object: this._value, key: this._key},
       bubbles: false,
       composed: true
     }));
   }
-  _getConfig(_config) {
-    let _value = this.value[this.key];
-    let _type = typeof _value;
-    let _constructor = 'null';
-    if (_value && _value.constructor) _constructor = _value.constructor.name;
+  _objectMutatedHandler(event) {
+    if (event.detail.object === this._value) {
+      if (event.detail.key === this._key || event.detail.key === '*') {
+        this._update();
+      }
+    }
+  }
+  /* Finds first matching configuration for object property */
+  _getConfig() {
+    let object = this._value;
+    let key = this._key;
+    let value = this._value[this._key];
+    let type = typeof value;
+    let cstr = (value && value.constructor) ? value.constructor.name : 'null';
 
-    if ('key:' + this.key in _config) {
-      return _config['key:' + this.key];
-    }
-    if ('value:' + String(_value) in _config) {
-      return _config['value:' + String(_value)];
-    }
-    if ('constructor:' + _constructor in _config) {
-      return _config['constructor:' + _constructor];
-    }
-    if ('type:' + _type in _config) {
-      return _config['type:' + _type];
+    // Follow object prototype chain to find first configuration block that matches.
+    let proto = object.__proto__;
+    let config;
+
+    while (proto) {
+      config = IoObjectProperty.config['constructor:' + proto.constructor.name];
+      if (config) {
+        if ('key:' + key in config) {
+          return config['key:' + key];
+        }
+        if ('value:' + String(value) in config) {
+          return config['value:' + String(value)];
+        }
+        if ('constructor:' + cstr in config) {
+          return config['constructor:' + cstr];
+        }
+        if ('type:' + type in config) {
+          return config['type:' + type];
+        }
+      }
+      proto = proto.__proto__;
     }
   }
   _update() {
-    // let _config = this._getConfig(IoObjectProperty.config['Object']);
-    // let _constructor = this.value.constructor.name;
-    // if (_constructor !== 'Object' && IoObjectProperty.config[_constructor]) {
-    //   _config = this._getConfig(IoObjectProperty.config[_constructor]) || _config;
-    // }
-    let _config = IoObjectProperty.getConfig(this.value, this.key);
-    this._addEditor(this._editor, _config.tag, _config.params);
-    this._editor.value = this.value[this.key];
-  }
-  _updateJob() {
-    clearTimeout(this._updateID);
-    this._updateID = setTimeout(() => {
-      delete this._updateID;
-      this._update();
-    });
+    let config = this._getConfig();
+    let params = config.params || {};
+
+    if (this._editor) {
+      this.removeChild(this._editor);
+      delete this._editor;
+    }
+    
+    if (!this._editor || this._editor.localName != config.tag) {
+      this._editor = document.createElement(config.tag);
+      this._editor.addEventListener('io-value-set', this._valueSetListener);
+      this.appendChild(this._editor);
+    }
+
+    for (var c in params) {
+      this._editor[c] = config.params[c];
+    }
+
+    this._editor.value = this._value[this._key];
   }
 }
 
-window.customElements.define(IoObjectProperty.is, IoObjectProperty);
-
+Io.define('ObjectProperty', IoObjectProperty);
 
 // Default object property configurations.
 // Object configurations are looked up in order of prototype inheritance.
@@ -140,41 +149,10 @@ IoObjectProperty.config = {
     'type:string': {tag: 'io-value', params: {type: 'string'}},
     'type:number': {tag: 'io-value', params: {type: 'number', step: 0.1}},
     'type:boolean': {tag: 'io-value', params: {type: 'boolean'}},
-    'type:object': {tag: 'io-object'}
+    'type:object': {tag: 'io-object', params: {labeled: true}}
   },
   'constructor:Array': {
     'type:number': {tag: 'io-value', params: {type: 'number', step: 1 }}
-  }
-}
-
-
-// Finds first matching configuration for object property
-IoObjectProperty.getConfig = function(object, key) {
-  let value = object[key];
-  let type = typeof value;
-  let cstr = 'null';
-  if (value && value.constructor) cstr = value.constructor.name;
-
-  // Follow object prototype chain to find first configuration block that matches.
-  let _proto = object.__proto__;
-  while (_proto) {
-    let _config = IoObjectProperty.config['constructor:' + _proto.constructor.name];
-    if (_config) {
-      if ('key:' + key in _config) {
-        console.log('key:' + key)
-        return _config['key:' + key];
-      }
-      if ('value:' + String(value) in _config) {
-        return _config['value:' + String(value)];
-      }
-      if ('constructor:' + cstr in _config) {
-        return _config['constructor:' + cstr];
-      }
-      if ('type:' + type in _config) {
-        return _config['type:' + type];
-      }
-    }
-    _proto = _proto.__proto__;
   }
 }
 

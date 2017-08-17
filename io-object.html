@@ -5,8 +5,8 @@ This code may only be used under the MIT style license found at
 https://raw.githubusercontent.com/arodic/io-object/master/LICENSE
 -->
 
-<link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="io-base.html">
+<link rel="import" href="io-object-constructor.html">
 <link rel="import" href="io-object-property.html">
 
 <!--
@@ -26,150 +26,51 @@ Example:
 @demo demo/ io-object demo
 -->
 
-<dom-module id="io-styles">
-  <template>
-    <style is="custom-style">
-    :host {
-      --io-color: rgb(0, 0, 0);
-      --io-color-invalid: tomato;
-      --io-color-disabled: rgba(0, 0, 0, 0.25);
-      --io-color-constructor: black;
-      --io-color-label: rgb(136, 19, 145);
-      --io-color-number: rgb(28, 0, 207);
-      --io-color-boolean: rgb(170, 13, 145);
-      --io-color-string: rgb(196, 26, 22);
-      --io-bg-focused: rgba(255, 255, 0, 0.2);
-    }
-    :host {
-      color: var(--io-color);
-    }
-    :host([disabled]) {
-      color: var(--io-color-disabled) !important;
-    }
-    :host([invalid]) {
-      color: var(--io-color-invalid) !important;
-    }
+<style>
+  io-object {
+    display: inline-block;
+  }
+</style>
 
-    </style>
-  </template>
-</dom-module>
+<script>
 
-<dom-module id="io-object">
-  <template>
-    <style is="custom-style" include="io-styles">
-    :host {
-      display: inline-block;
-    }
-    .io-constructor {
-      cursor: pointer;
-      color: var(--io-color-constructor);
-    }
-    :host(:not([labeled])) .io-label {
-      display: none;
-    }
-    .io-label {
-      color: var(--io-color-label);
-      vertical-align: top;
-      user-select: none;
-    }
-    .io-label:before {
-      content: "\A";
-      white-space: pre;
-    }
-
-    :host  *[type="number"] {
-      color: var(--io-color-number);
-    }
-    :host  *[type="string"] {
-      color: var(--io-color-string);
-    }
-    :host  *[type="boolean"] {
-      cursor: pointer;
-      color: var(--io-color-boolean);
-      user-select: none;
-    }
-    </style>
-    <span class="io-constructor"
-      on-click="_toggleHandler"
-      on-keydown="_toggleHandler"
-      tabindex="0">[[_constructor]]</span>
-    <template is="dom-repeat" items="{{_keys}}">
-      <span class="io-label">[[item]]: </span><io-object-property value="[[_value]]" key="[[item]]"></io-object-property>
-    </template>
-  </template>
-  <script>
-
-  class IoObject extends Polymer.Element {
-    static get is() { return 'io-object'; }
-    static get properties() {
-     return {
-       /* Value (object) to be edited with this element. */
-       value: {
-         type: Object,
-         observer: '_updateJob'
-       },
-       /* This attribute expands property editors. */
-       expanded: {
-         value: false,
-         type: Boolean,
-         observer: '_updateJob',
-         reflectToAttribute: true
-       },
-       /* This attribute reveals property labels. */
-       labeled: {
-         value: true,
-         type: Boolean,
-         observer: '_updateJob',
-         reflectToAttribute: true
-       },
-       _keys: {
-         value: null,
-         type: Array
-       }
-     }
-    }
-    _toggleHandler(event) {
-      if (event.which == 13 || event.which == 32) {
-        event.preventDefault();
-        this.expanded = !this.expanded;
-      } else if (event.type == 'click') {
-        this.expanded = !this.expanded;
+class IoObject extends Io.Base {
+  static get is() { return 'io-object'; }
+  static get properties() {
+    return {
+      /* Value to be displayed/edited. */
+      value: {
+        type: Object,
+        observer: '_updateJob'
+      },
+      /* This attribute expands property editors. */
+      expanded: {
+        value: false,
+        type: Boolean,
+        observer: '_updateJob',
+        reflectToAttribute: true
+      },
+      /* This attribute reveals property labels. */
+      labeled: {
+        value: false,
+        type: Boolean,
+        observer: '_updateJob',
+        reflectToAttribute: true
       }
-    }
-    _update() {
-      // TODO: polymer bug?
-      // On value change, keys from previous object used.
-      this._value = this.value;
-      if (typeof this.value == 'object' && this.value !== null) {
-        if (this.expanded) {
-          if (this.labeled) {
-            this._constructor = '▾ ' + this.value.constructor.name || 'Object';
-          } else {
-            this._constructor = '';
-          }
-          this._keys = Object.keys(this.value);
-          // this._value = this.value;
-        } else {
-          if (this.labeled) {
-            this._constructor = '▸ ' + this.value.constructor.name || 'Object';
-            this._constructor += '(' + Object.keys(this.value).length + ')';
-          } else {
-            this._constructor = '';
-          }
-          this._keys = [];
-        }
-      }
-    }
-    _updateJob() {
-      clearTimeout(this._updateID);
-      this._updateID = setTimeout(() => {
-        delete this._updateID;
-        this._update();
-      });
     }
   }
+  _update() {
+    this.innerHTML = '';
+    if (typeof this.value == 'object' && this.value !== null) {
+      let _keys = this.expanded ? Object.keys(this.value) : [];
+      this.appendChild(new IoObjectConstructor(this.value, this.expanded));
+      for (let i = 0; i < _keys.length; i++) {
+        this.appendChild(new IoObjectProperty(_keys[i], this.value, this.labeled));
+      }
+    }
+  }
+}
 
-  window.customElements.define(IoObject.is, IoObject);
+Io.define('Object', IoObject);
 
-  </script>
-</dom-module>
+</script>

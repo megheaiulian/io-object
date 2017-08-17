@@ -9,14 +9,16 @@
   "main": "io-object.html",
   "keywords": [
     "io-object",
+    "io-object-property",
     "io-elements",
     "input",
     "output",
     "editor",
     "data",
+    "object",
+    "value",
     "i/o",
     "io",
-    "ui",
     "polymer",
     "element",
     "web-components"
@@ -31,7 +33,6 @@
     "**/.*"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.2",
     "io-value": "arodic/io-value#^2.1.0"
   },
   "devDependencies": {

@@ -1,0 +1,61 @@
+<!--
+@license
+Copyright (c) 2015-2017 Aleksandar Rodic. All rights reserved.
+This code may only be used under the MIT style license found at
+https://raw.githubusercontent.com/arodic/io-object/master/LICENSE
+-->
+
+<!--
+`io-object-constructor` is a toggable label for io-object editor.
+
+NOTE: this elements expects its parentElement to be io-object.
+
+@IoObjectConstructor
+@extends HTMLElement
+@summary `io-object-constructor` is a toggable label for io-object editor.
+-->
+
+<style>
+  io-object-constructor {
+    display: inline;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+
+class IoObjectConstructor extends HTMLElement {
+  static get is() { return 'io-object-constructor'; }
+  constructor(object, expanded) {
+    super();
+    var constructor = '';
+    if (expanded) {
+      constructor = '▾ ' + object.constructor.name || 'Object';
+    } else {
+      constructor = '▸ ' + object.constructor.name || 'Object';
+      constructor += '(' + Object.keys(object).length + ')' 
+    }
+    this.innerHTML = constructor;
+    this._toggleListener = this._toggleHandler.bind(this);
+  }
+  connectedCallback() {
+    this.addEventListener('click', this._toggleListener);
+    this.addEventListener('keydown', this._toggleListener);
+  }
+  disconnectedCallback() {
+    this.removeEventListener('click', this._toggleListener);
+    this.removeEventListener('keydown', this._toggleListener);
+  }
+  _toggleHandler(event) {
+    if (event.which == 13 || event.which == 32) {
+      event.preventDefault();
+      this.parentElement.expanded = !this.parentElement.expanded;
+    } else if (event.type == 'click') {
+      this.parentElement.expanded = !this.parentElement.expanded;
+    }
+  }
+}
+
+Io.define('ObjectConstructor', IoObjectConstructor);
+
+</script>

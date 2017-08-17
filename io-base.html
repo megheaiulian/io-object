@@ -1,0 +1,81 @@
+<!--
+@license
+Copyright (c) 2015-2017 Aleksandar Rodic. All rights reserved.
+This code may only be used under the MIT style license found at
+https://raw.githubusercontent.com/arodic/io-value/master/LICENSE
+-->
+
+<!--
+`io-base` is a base class for io-elements.
+
+@IoElement
+@extends HTMLElement
+@summary `io-base` is a base class for io-elements.
+-->
+
+<script>
+
+class IoBase extends HTMLElement {
+  static get is() { return 'io-base'; }
+  static get observedAttributes() {
+    // TODO: follow prototype chain
+    if (this.properties) {
+      return Object.keys(this.properties);
+    }
+    return [];
+  }
+  constructor() {
+    super();
+    // TODO: follow prototype chain
+    this._properties = this.__proto__.constructor.properties || {};
+    for (let propKey in this._properties) {
+      let propConfig = this._properties[propKey];
+      Io.defineProperty(this, propKey, propConfig);
+    }
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (this._properties[name].type == Boolean) {
+      this[name] = newValue == '' ? true : false;
+    } else if (this._properties[name].type == Number) {
+      this[name] = ParseInt(newValue);
+    } else {
+      this[name] = newValue;
+    }
+  }
+  _update() {}
+  _updateJob() {
+    clearTimeout(this._updateID);
+    this._updateID = setTimeout(() => {
+      delete this._updateID;
+      this._update();
+    });
+  }
+}
+
+window.Io = {
+  defineProperty: function(instanceRef, propKey, propConfig) {
+    Object.defineProperty(instanceRef, propKey, {
+      get: function() {
+        return this['_' + propKey];
+      },
+      set: function(value) {
+        this['_' + propKey] = value;
+        if (propConfig.observer) this[propConfig.observer](value);
+        // TODO: reflect to attribute
+        // TODO: notify
+        // TODO: type check
+      },
+      enumerable: true,
+      configurable: true
+    });
+    instanceRef['_' + propKey] = propConfig.value;
+  },
+  define: function(ClassName, ClassRef) {
+    Io[ClassName] = ClassRef;
+    window.customElements.define(ClassRef.is, ClassRef);
+  }
+}
+
+Io.define('Base', IoBase);
+
+</script>

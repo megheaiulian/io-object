@@ -37,6 +37,8 @@
         test('instantiating the element with default properties works', function() {
           var element = fixture('BasicTestFixture');
           assert.equal(element.value, undefined);
+          assert.equal(element.expanded, false);
+          assert.equal(element.labeled, false);
         });
 
         test('setting a property on the element works', function(done) {
@@ -44,12 +46,12 @@
           element.value = {a: 1, b:2};
 
           setTimeout(function () {
-            var ioObjectItemElement = element.shadowRoot.querySelector('io-object-property');
+            var ioObjectItemElement = element.querySelector('io-object-property');
             var ioValueElement = ioObjectItemElement.querySelector('io-value');
             var spanElement = ioValueElement.shadowRoot.querySelector('span');
             assert.equal(spanElement.innerHTML, '1.0');
             done();
-          }.bind(this), 1000);
+          }.bind(this));
 
         });
 
@@ -62,7 +64,7 @@
             element.value = {c: "c", d: "d"};
 
             setTimeout(function () {
-              var ioObjectItemElement = element.shadowRoot.querySelector('io-object-property');
+              var ioObjectItemElement = element.querySelector('io-object-property');
               var ioValueElement = ioObjectItemElement.querySelector('io-value');
               var spanElement = ioValueElement.shadowRoot.querySelector('span');
               assert.equal(spanElement.innerHTML, 'c');
@@ -71,9 +73,9 @@
               // Find a better way to test this.
               assert.equal(ioValueElement.disabled, false);
               done();
-            }.bind(this), 1000);
+            }.bind(this));
 
-          }.bind(this), 100);
+          }.bind(this));
         });
 
       });
